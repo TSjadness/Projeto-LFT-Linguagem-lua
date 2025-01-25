@@ -30,8 +30,8 @@ Um programa Lua não possui um ponto de entrada principal, sendo controlado pelo
 A análise léxica identifica os **tokens** da linguagem (palavras-chave, identificadores, números, etc.) e gera uma representação formal para a próxima etapa do compilador.
 
 #### 📂 **Arquivos Disponíveis**:
-<!-- - **Documentação PDF:** [Análise Léxica da Linguagem Lua](https://github.com/Clovijan/Compilador_Lua/blob/main/DOCUMENTACAO/Documenta%C3%A7%C3%A3o%20da%20Linguagem%20Lua.pdf)
-- **Código:** [ExpressionLanguageLex.py](https://github.com/Clovijan/Compilador_Lua/blob/main/COMPILADOR_LUA/ExpressionLanguageLex.py) -->
+- **Documentação PDF:** [Análise Léxica da Linguagem Lua](https://github.com/TSjadness/Projeto-LFT-Linguagem-lua/blob/main/DOCUMENTACAO/Documenta%C3%A7%C3%A3o%20Sint%C3%A1tica%20da%20Linguagem%20LUA.pdf)
+- **Código:** [ExpressionLanguageLex.py]('')
 
 #### 📝 **Funções Implementadas**:
 - **Identificação de Tokens:**
