@@ -93,8 +93,8 @@ t_ignore = ' \t'  # Ignorar espaços em branco
 
 
 def t_STRING(t):
-    r'\"(.|\n)*?\"'
-    t.type = reserved.get(t.value.lower(), 'STRING')
+    r'\"([^\\\n]|(\\.))*?\"'
+    t.value = t.value[1:-1]
     return t
 
 
