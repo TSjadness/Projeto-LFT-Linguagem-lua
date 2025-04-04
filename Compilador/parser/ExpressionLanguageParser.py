@@ -282,8 +282,12 @@ def p_args(p):
 
 # definição de corpofunção
 def p_body_function(p):
-    '''body_function : LPAREN list_pars RPAREN block END'''
-    p[0] = sa.ConcreteBodyFunction(p[2], p[4])
+    '''body_function : LPAREN RPAREN block END
+                     | LPAREN list_pars RPAREN block END'''
+    if len(p) == 5:
+        p[0] = sa.ConcreteBodyFunction(None, p[3])
+    else:
+        p[0] = sa.ConcreteBodyFunction(p[2], p[4])
 
 
 # definição de listapars

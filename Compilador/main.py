@@ -5,6 +5,9 @@ from visitor.Visitor import Visitor
 from syntax.SintaxeAbstrata import *
 
 
+PATH = "../arquivos_lua/calculadora.lua"
+
+
 def analisar_codigo(codigo: str, debug=False):
     print("\n" + "=" * 50)
     print("Código de entrada:")
@@ -34,6 +37,6 @@ def carregar_arquivo_lua(path):
 
 
 if __name__ == "__main__":
-    codigo = carregar_arquivo_lua(path)
-        if codigo:
-            analisar_codigo(codigo)
+    codigo = carregar_arquivo_lua(PATH)
+    if codigo:
+        analisar_codigo(codigo)

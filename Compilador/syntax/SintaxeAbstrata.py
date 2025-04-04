@@ -314,8 +314,11 @@ class ListNamesConcrete2(ListNames):
 
 class ListNamesConcrete1(ListNames):
     def __init__(self, name, list_names):
-        self.name = name  # <- idem aqui
+        self.name = name
         self.list_names = list_names
+
+    def accept(self, visitor):
+        return visitor.visitListNamesConcrete1(self)
 
 
 '''declaração de listaexp'''
