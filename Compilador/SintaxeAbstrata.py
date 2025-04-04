@@ -2,6 +2,10 @@ from abc import abstractmethod
 from abc import ABCMeta
 from Visitor import Visitor
 
+
+''' declaração de program'''
+
+
 class Program(metaclass=ABCMeta):
     @abstractmethod
     def accept(self, visitor):
@@ -22,6 +26,9 @@ class ProgramConcrete2(Program):
 
     def accept(self, visitor):
         return Visitor.visitProgramConcrete2(self)
+
+
+'''declaração de bloco'''
 
 
 class Block(metaclass=ABCMeta):
@@ -46,6 +53,8 @@ class BlockConcrete2(Block):
     def accept(self, visitor):
         return Visitor.visitBlockConcrete2(self)
 
+
+'''declaração de comando'''
 
 
 class Command(metaclass=ABCMeta):
@@ -161,10 +170,9 @@ class CommandDefFunction(Command):
 
 
 class CommandLocalListVarsAtribListExps(Command):
-    def __init__(self, list_vars, list_exps, command_ret):
+    def __init__(self, list_vars, list_exps):
         self.list_vars = list_vars
         self.list_exps = list_exps
-        self.command_ret = command_ret
 
     def accept(self, visitor):
         return Visitor.visitCommandLocalListVarsAtribListExps(self)
@@ -178,14 +186,24 @@ class CommandRet(metaclass=ABCMeta):
     def accept(self, visitor):
         pass
 
-
-class CommandRetConcrete(CommandRet):
+class CommandReturnNone(CommandRet):
+    def accept(self, visitor):
+        return Visitor.visitCommandRet1(self)
+    
+class CommandReturnListExps(CommandRet):
     def __init__(self, list_exps):
         self.list_exps = list_exps
 
     def accept(self, visitor):
-        return Visitor.visitCommandRet(self)
+        return Visitor.visitCommandRet2(self)
 
+class CommandReturnListExpsSemicolon(CommandRet):
+    def __init__(self, list_exps):
+        self.list_exps = list_exps
+
+    def accept(self, visitor):
+        return Visitor.visitCommandRet3(self)
+    
 
 '''declaração de rótulo'''
 
@@ -221,8 +239,9 @@ class NameFunction(metaclass=ABCMeta):
             return Visitor.visitExpNameFunction1(self)
 
     def ExpNameFunction2(NameFunction):
-        def __init__(self, name):
+        def __init__(self, name, method):
             self.name = name
+            self.method = method
 
         def accept(self, visitor):
             return Visitor.visitExpNameFunction2(self)
@@ -238,7 +257,7 @@ class ListVars(metaclass=ABCMeta):
 
 
 class ListvarsConcrete1(ListVars):
-    def __init__(self, var, list_vars):
+    def __init__(self, var):
         self.var = var
 
     def accept(self, visitor):
@@ -340,7 +359,20 @@ class Exp(metaclass=ABCMeta):
     def accept(self, visitor):
         pass
 
+class ExpString(Exp):
+    def __init__(self, string):
+        self.string = string
 
+    def accept(self, visitor):
+        return Visitor.visitCommandExpString(self)
+
+class ExpNumber(Exp):
+    def __init__(self, number):
+        self.number = number
+
+    def accept(self, visitor):
+        return Visitor.visitCommandExpNumber(self)
+    
 class ExpNil(Exp):
     def __init__(self, exp):
         self.exp = exp
@@ -373,7 +405,14 @@ class ExpMinus(Exp):
     def accept(self, visitor):
         return Visitor.visitCommandMinus(self)
 
+class ExpTimes(Exp):
+    def __init__(self, exp, exp2):
+        self.exp = exp
+        self.exp2 = exp2
 
+    def accept(self, visitor):
+        return Visitor.visitCommandExpTimes(self)
+    
 class ExpNot(Exp):
     def __init__(self, exp):
         self.exp = exp
@@ -398,6 +437,15 @@ class ExpDivide(Exp):
 
     def accept(self, visitor):
         return Visitor.visitCommandDivide(self)
+
+
+class ExpDif(Exp):
+    def __init__(self, exp1, exp2):
+        self.exp1 = exp1
+        self.exp2 = exp2
+
+    def accept(self, visitor):
+        return Visitor.visitCommandExpDif(self)
 
 
 class ExpExpo(Exp):
@@ -454,7 +502,7 @@ class FunctionConcrete(ConcreteFunction):
         self.name_function = name_function
         self.body_function = body_function
 
-    def accept(self, divisor):
+    def accept(self, visitor):
         return Visitor.visitFunctionConcrete(self)
 
 
@@ -499,7 +547,7 @@ class CallFunctionConcrete(CallFunction):
         self.args = args
 
     def accept(self, visitor):
-        return Visitor.visitCommandCallFunction(self)
+        return visitor.visitCommandCallFunction(self)
 
 
 '''declaração de args'''
@@ -511,12 +559,12 @@ class Args(metaclass=ABCMeta):
         pass
 
 
-class ExpArgs1(Args):
-    def __init__(self, list_exps):
-        self.list_exps = list_exps
+class ExpArgs1:
+    def __init__(self, value):
+        self.value = value
 
-    def accep(self, visitor):
-        return Visitor.visitCommandArgs(self)
+    def accept(self, visitor):
+        return visitor.visitExpArgs1(self)
 
 
 class ExpArgs2(Args):
