@@ -104,7 +104,35 @@ class AbstractVisitor(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def visitCommandRet(self, commandRetConcrete):
+    def visitCommandRet1(self, commandRet):
+        pass
+
+    @abstractmethod
+    def visitCommandRet2(self, commandRet):
+        pass
+
+    @abstractmethod
+    def visitCommandRet3(self, commandRet):
+        pass
+    
+    @abstractmethod
+    def visitFunctionConcrete(self, functionConcrete):
+        pass
+
+    @abstractmethod
+    def visitExpArgs1(self, args):
+        pass
+
+    @abstractmethod
+    def visitCommandExpString(self, commandExp):
+        pass
+
+    @abstractmethod
+    def visitCommandExpNumber(self, commandExp):
+        pass
+
+    @abstractmethod
+    def visitCommandExpTimes(self, commandExp):
         pass
 
     @abstractmethod
@@ -245,6 +273,10 @@ class AbstractVisitor(metaclass=ABCMeta):
 
     @abstractmethod
     def visitCommandExpDivide(self, commandExp):
+        pass
+
+    @abstractmethod
+    def visitCommandExpDif(self, commandExp):
         pass
 
     @abstractmethod
