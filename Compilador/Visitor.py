@@ -10,6 +10,7 @@ def blank():
         p = p + ' '
     return p
 
+
 class Visitor(AbstractVisitor):
     def visitProgramConcrete(self, programConcrete):
         programConcrete.block.accept(self)
@@ -120,6 +121,11 @@ class Visitor(AbstractVisitor):
         commandRet.list_exps.accept(self)
         print(';')
 
+    def visitFunctionConcrete(self, functionConcrete):
+        print('function ', end='')
+        functionConcrete.name_function.accept(self)
+        functionConcrete.body_function.accept(self)
+
     def visitCommandDefFunction(self, commandDefFunction):
         commandDefFunction.function.accept(self)
 
@@ -153,9 +159,14 @@ class Visitor(AbstractVisitor):
 
     def visitBooleanExp(self, booleanExp):
         print(booleanExp.boolValue, end='')
-      
+
+    def visitCommandExpTimes(self, commandExp):
+        commandExp.exp.accept(self)
+        print('*', end='')
+        commandExp.exp2.accept(self)
+
     def visitCommandExpNumber(self, commandExp):
-        commandExp.number.accept(self)
+        print(f"{commandExp.number}", end='')
 
     def visitCommandExpString(self, commandExp):
         commandExp.string.accept(self)
@@ -181,6 +192,11 @@ class Visitor(AbstractVisitor):
     def visitCommandExpDivide(self, commandExp):
         commandExp.exp.accept(self)
         print('/')
+        commandExp.exp2.accept(self)
+
+    def visitCommandExpDif(self, commandExp):
+        commandExp.exp1.accept(self)
+        print("~=", end='')
         commandExp.exp2.accept(self)
 
     def visitCommandExpExpo(self, commandExp):
