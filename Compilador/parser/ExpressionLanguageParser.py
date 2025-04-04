@@ -132,7 +132,7 @@ def p_list_vars(p):
 
 def p_var(p):
     '''var : NAME 
-           | prefix_exp LCOLCH exp RCOLCH'''
+           | prefix_exp COLCH exp RCOLCH'''
     if len(p) == 2:
         p[0] = sa.VarConcrete1(p[1])
     elif len(p) == 5:
@@ -158,11 +158,15 @@ def p_prefix_exp(p):
 
 def p_sufix_exp(p):
     '''sufix_exp : DOT NAME
-                 | DOT call_function'''
-    if isinstance(p[2], str):
-        p[0] = sa.SufixExpDot(p[2])
+                 | DOT call_function
+                 | COLCH exp RCOLCH'''
+    if len(p) == 3:
+        if isinstance(p[2], str):
+            p[0] = sa.SufixExpDot(p[2])
+        else:
+            p[0] = sa.SufixExpCall(p[2])
     else:
-        p[0] = sa.SufixExpCall(p[2])
+        p[0] = sa.SufixExpColch(p[2])
 
         
 # definição de listanomes
@@ -296,7 +300,7 @@ def p_list_pars(p):
                  | list_names COMMA VARARGS
                  | VARARGS'''
     if len(p) == 2 and isinstance(p[1], sa.ListNames):
-        p[0] = sa.ListPars(p[1])
+        p[0] = sa.ListParsConcrete1(p[1])
     elif len(p) == 4:
         p[0] = sa.ListPars2(p[1], p[3])
     else:

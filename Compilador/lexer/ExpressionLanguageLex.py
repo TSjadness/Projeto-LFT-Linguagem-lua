@@ -29,7 +29,7 @@ tokens = [
     'NAME', 'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'EQUALS', 'LPAREN',
     'RPAREN', 'COMMA', 'SEMICOLON', 'COLON', 'DUALCOLON',
     'VARARGS', 'ATRIB', 'DIF', 'GT', 'LT', 'GTEQUALS', 'LTEQUALS',
-    'PERCENTUAL', 'EXPO', 'CONCAT', 'TAG', 'LCOLCH', 'RCOLCH', 'DOT','STRING'
+    'PERCENTUAL', 'EXPO', 'CONCAT', 'TAG', 'COLCH', 'RCOLCH', 'DOT','STRING'
 ] + list(reserved.values())
 
 # Regras de expressões regulares para tokens simples
@@ -48,7 +48,7 @@ t_COLON = r':'
 t_DUALCOLON = r'::'
 t_PERCENTUAL = r'%'
 t_VARARGS = r'\.\.\.'
-t_LCOLCH = r'\['
+t_COLCH = r'\['
 t_RCOLCH = r'\]'
 t_GT = r'>'
 t_LT = r'<'

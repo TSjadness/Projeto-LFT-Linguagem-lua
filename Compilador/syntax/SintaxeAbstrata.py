@@ -2,6 +2,7 @@ from abc import abstractmethod
 from abc import ABCMeta
 from visitor.Visitor import Visitor
 
+
 ''' declaração de program'''
 
 
@@ -88,18 +89,6 @@ class CommandDoBrlockEnd(Command):
 
     def accept(self, visitor):
         return visitor.visitCommandDoBlockEnd(self)
-
-
-
-
-
-# aguardando validação do grupo
-# class CommandStructRepeat(Command):
-#     def __init__(self, struct_repeat):
-#         self.struct_repeat = struct_repeat
-
-#     def accept(self, visitor):
-#         return visitor.visitCommandStructRepeat(self)
 
 
 class CommandStructRepeat(Command):
@@ -282,13 +271,14 @@ class VarConcrete2(Var):
         return visitor.visitCommandVar2(self)
 
 
-'''declaração de nomes'''
+
+'''declaração de listadenomes'''
 
 
 class NameConcrete:
     def __init__(self, value, linha=None):
         self.value = value
-        self.linha = linha  # pode ser usado para mensagens de erro
+        self.linha = linha
 
     def accept(self, visitor):
         return visitor.visitNameConcrete(self)
@@ -300,8 +290,13 @@ class ListNames(metaclass=ABCMeta):
         pass
 
 
-'''declaração de listadenomes'''
+class ListNamesConcrete1(ListNames):
+    def __init__(self, name, list_names):
+        self.name = name
+        self.list_names = list_names
 
+    def accept(self, visitor):
+        return visitor.visitListNamesConcrete1(self)
 
 
 class ListNamesConcrete2(ListNames):
@@ -310,15 +305,6 @@ class ListNamesConcrete2(ListNames):
 
     def accept(self, visitor):
         return visitor.visitListNamesConcrete2(self)
-
-
-class ListNamesConcrete1(ListNames):
-    def __init__(self, name, list_names):
-        self.name = name
-        self.list_names = list_names
-
-    def accept(self, visitor):
-        return visitor.visitListNamesConcrete1(self)
 
 
 '''declaração de listaexp'''
@@ -522,76 +508,13 @@ class ExpDif(Exp):
         return visitor.visitCommandExpDif(self)
 
 
-class ExpPercentual:
-    def __init__(self, left, right):
-        self.left = left
-        self.right = right
-    def accept(self, visitor):
-        return visitor.visitExpPercentual(self)
 
 
-class ExpConcat:
-    def __init__(self, left, right):
-        self.left = left
-        self.right = right
-    def accept(self, visitor):
-        return visitor.visitExpConcat(self)
 
 
-class ExpLt:
-    def __init__(self, left, right):
-        self.left = left
-        self.right = right
-    def accept(self, visitor):
-        return visitor.visitExpLt(self)
 
 
-class ExpLtEquals:
-    def __init__(self, left, right):
-        self.left = left
-        self.right = right
-    def accept(self, visitor):
-        return visitor.visitExpLtEquals(self)
 
-
-class ExpGt:
-    def __init__(self, left, right):
-        self.left = left
-        self.right = right
-    def accept(self, visitor):
-        return visitor.visitExpGt(self)
-
-
-class ExpGtEquals:
-    def __init__(self, left, right):
-        self.left = left
-        self.right = right
-    def accept(self, visitor):
-        return visitor.visitExpGtEquals(self)
-
-
-class ExpEquals:
-    def __init__(self, left, right):
-        self.left = left
-        self.right = right
-    def accept(self, visitor):
-        return visitor.visitExpEquals(self)
-
-
-class ExpAnd:
-    def __init__(self, left, right):
-        self.left = left
-        self.right = right
-    def accept(self, visitor):
-        return visitor.visitExpAnd(self)
-
-
-class ExpOr:
-    def __init__(self, left, right):
-        self.left = left
-        self.right = right
-    def accept(self, visitor):
-        return visitor.visitExpOr(self)
 
 
 class ExpExpo(Exp):
@@ -684,6 +607,17 @@ class PrefixExpCallFunction(ExpPrefix):
     def accept(self, visitor):
         return visitor.visitCommandExpCallFunction(self)
 
+class SufixExp(metaclass=ABCMeta):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class SufixExpColch(SufixExp):
+    def __init__(self, exp):
+        self.exp = exp
+
+    def accept(self, visitor):
+        return visitor.visitSufixExpColch(self)
 
 class PrefixExpSufix:
     def __init__(self, prefix, sufix):
@@ -781,7 +715,7 @@ class ListPars(metaclass=ABCMeta):
         pass
 
 
-class ListPars(ListPars):
+class ListParsConcrete1(ListPars):
     def __init__(self, list_names):
         self.list_names = list_names
 
@@ -852,11 +786,6 @@ class Function(metaclass=ABCMeta):
 
 '''declaração de corpo da função'''
 
-
-class BodyFunction(metaclass=ABCMeta):
-    @abstractmethod
-    def accept(self, visitor):
-        pass
 
 
 class ConcreteBodyFunction(BodyFunction):
@@ -986,10 +915,6 @@ class StructForConcrete(StructFor):
         else:
             return visitor.visitCommandStructFor2(self)
 
-
-class CommandStructFor(Command):
-    def __init__(self, struct_for_concrete):
-        self.struct_for_concrete = struct_for_concrete
 
     def accept(self, visitor):
         return visitor.visitCommandStructFor(self)

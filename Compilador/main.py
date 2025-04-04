@@ -3,28 +3,44 @@ from lexer.ExpressionLanguageLex import lexer
 from parser.ExpressionLanguageParser import parser
 from visitor.Visitor import Visitor
 from syntax.SintaxeAbstrata import *
+import sys
 
 
-PATH = "../arquivos_lua/calculadora.lua"
+PATH = "../arquivos_lua/teste3.lua"
 
 
-def analisar_codigo(codigo: str, debug=False):
-    print("\n" + "=" * 50)
+def analisar_codigo(codigo):
+    print("="*50)
     print("Código de entrada:")
-    print(codigo.strip())
-    print("=" * 50 + "\n")
-    
-    lexer.input(codigo)
-    result = parser.parse(debug=debug)
+    print(codigo)
+    print("="*50)
 
-    if result is None:
-        print("Erro: análise sintática falhou. Verifique seu código.")
-    else:
-        print("Análise sintática concluída com sucesso.")
-        print("\nIniciando análise semântica:\n")
-        visitor = Visitor()
-        result.accept(visitor)
-        print("\nAnálise semântica finalizada.")
+    lexer.input(codigo)
+
+    try:
+        # Salvar o debug em arquivo
+        with open("debug.txt", "w") as debug_file:
+            original_stdout = sys.stdout  # Salva a saída original
+            sys.stdout = debug_file       # Redireciona para o arquivo
+
+            result = parser.parse(debug=False)
+
+            sys.stdout = original_stdout  # Restaura a saída normal
+
+        print("\nAnálise sintática concluída com sucesso.")
+        print("Debug salvo em 'debug.txt'.")
+
+        if result is None:
+            print("Erro: análise sintática falhou.")
+        else:
+            print("\nIniciando análise semântica:\n")
+            visitor = Visitor()
+            result.accept(visitor)
+            print("\nAnálise semântica finalizada.")
+    except Exception as e:
+        sys.stdout = original_stdout  # Em caso de erro, restaura saída
+        print("Erro durante a análise:")
+        print(e)
 
 
 def carregar_arquivo_lua(path):

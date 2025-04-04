@@ -254,6 +254,9 @@ class Visitor(AbstractVisitor):
         node.prefix.accept(self)
         node.sufix.accept(self)
 
+    def visitSufixExpColch(self, node):
+        return f"[{self.visit(node.exp)}]"
+        
     def visitSufixExpDot(self, node):
         print(".", end="")
         print(node.name, end="")
