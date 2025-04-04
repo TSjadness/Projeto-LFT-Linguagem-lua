@@ -1,6 +1,6 @@
+from lexer.ExpressionLanguageLex import tokens
+import syntax.SintaxeAbstrata as sa
 import ply.yacc as yacc
-from ExpressionLanguageLex import *
-import SintaxeAbstrata as sa
 
 precedence = (('left', 'OR'), ('left', 'AND'), ('left', 'GT', 'LT', 'GTEQUALS',
                                                 'LTEQUALS', 'EQUALS', 'DIF'),
@@ -11,15 +11,22 @@ precedence = (('left', 'OR'), ('left', 'AND'), ('left', 'GT', 'LT', 'GTEQUALS',
 
 # definição de trecho
 def p_program(p):
-    '''program : block
-               | function 
-               | function program'''
-    if (p[1] == 'block'):
-        p[0] = sa.ProgramConcrete(p[1])
-    elif (p[1] == 'function'):
-        p[0] = sa.ProgramConcrete(p[1])
-    elif (len(p) == 3):
-        p[0] = sa.ProgramConcrete2(p[1], p[2])
+    '''program : element_list'''
+    p[0] = sa.Program(p[1])
+
+def p_element_list(p):
+    '''element_list : element
+                    | element element_list'''
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = [p[1]] + p[2]
+
+
+def p_element(p):
+    '''element : block
+               | function'''
+    p[0] = p[1]
 
 
 # definição de bloco
@@ -32,7 +39,6 @@ def p_block(p):
         p[0] = sa.BlockConcrete2(p[1], p[2])
 
 
-# definição de comando
 def p_command(p):
     '''command : list_vars ATRIB list_exps
                | call_function
@@ -47,28 +53,42 @@ def p_command(p):
                | LOCAL list_vars ATRIB list_exps
                | command_ret'''
 
-    if (p[1] == 'list_vars'):
+    if len(p) == 4 and p[2] == '=':
         p[0] = sa.CommandAtrib(p[1], p[3])
-    elif (p[1] == 'call_function'):
+
+    elif len(p) == 2 and isinstance(p[1], sa.CallFunctionConcrete):
         p[0] = sa.CommandCallFunction(p[1])
-    elif (p[1] == 'rotulo'):
+
+    elif len(p) == 2 and isinstance(p[1], sa.ExpRotulo):
         p[0] = sa.CommandRotulo(p[1])
-    elif (p[1] == 'break'):
-        p[0] = sa.CommandBreak(p[1])
-    elif (len(p) == 3):
+
+    elif len(p) == 2 and p.slice[1].type == 'BREAK':
+        p[0] = sa.CommandBreak()
+
+    elif len(p) == 4 and p.slice[1].type == 'DO':
         p[0] = sa.CommandDoBlockEnd(p[2])
-    elif (p[1] == 'struct_while'):
-        p[0] = sa.CommandStructWhile(p[1])
-    elif (p[1] == 'struct_repeat'):
-        p[0] = sa.CommandStructRepeat(p[1])
-    elif (p[1] == 'if'):
-        p[0] = sa.CommandIf(p[1])
-    elif (p[1] == 'struct_for'):
+
+    elif len(p) == 2 and isinstance(p[1], sa.CommandStructWhile):
+        p[0] = p[1]  # ✅ Corrigido
+
+    elif len(p) == 2 and isinstance(p[1], sa.CommandStructRepeat):
+        p[0] = p[1]
+
+    elif len(p) == 2 and isinstance(p[1], sa.IfConcreteFull):
+        p[0] = p[1]
+
+    elif len(p) == 2 and isinstance(p[1], sa.StructForConcrete):
         p[0] = sa.CommandStructFor(p[1])
-    elif (p[1] == 'struct_for_in'):
-        p[0] = sa.CommandStructForIn(p[1])
-    elif (len(p) == 5):
+
+    elif len(p) == 2 and isinstance(p[1], sa.StructForInConcret):
+        p[0] = sa.CommandStructForIn(p[1].list_names, p[1].list_exps, p[1].block)
+
+    elif len(p) == 5 and p.slice[1].type == 'LOCAL' and p[3] == '=':
         p[0] = sa.CommandLocalListVarsAtribListExps(p[2], p[4])
+
+    elif len(p) == 2 and isinstance(p[1], sa.CommandRet):
+        p[0] = p[1]
+
 
 
 #Retorno da funcao
@@ -119,24 +139,40 @@ def p_var(p):
         p[0] = sa.VarConcrete2(p[1], p[3])
 
 
-# definição de prefixexp
+def p_exp_call_function(p):
+    '''exp : prefix_exp args'''
+    p[0] = sa.CallFunctionConcrete(p[1], p[2])
+
+
 def p_prefix_exp(p):
-    ''' prefix_exp : var
-                  | call_function '''
-    if (p[1] == 'var'):
-        p[0] = sa.PrefixExpVar(p[1])
-    if (p[1] == 'call_function'):
-        p[0] = sa.PrefixExpCallFunction(p[1])
+    '''prefix_exp : NAME
+                  | LPAREN exp RPAREN
+                  | prefix_exp sufix_exp'''
+    if len(p) == 2:
+        p[0] = sa.PrefixExpName(p[1])
+    elif len(p) == 4:
+        p[0] = p[2]
+    else:
+        p[0] = sa.PrefixExpSufix(p[1], p[2])
 
 
+def p_sufix_exp(p):
+    '''sufix_exp : DOT NAME
+                 | DOT call_function'''
+    if isinstance(p[2], str):
+        p[0] = sa.SufixExpDot(p[2])
+    else:
+        p[0] = sa.SufixExpCall(p[2])
+
+        
 # definição de listanomes
 def p_list_names(p):
-    '''list_names : list_names COMMA NAME  
-                  | NAME'''
-    if (len(p) == 3):
-        p[0] = sa.ListNamesConcrete1(p[1], p[3])
+    '''list_names : NAME
+                  | NAME COMMA list_names'''
+    if len(p) == 2:
+        p[0] = sa.ListNamesConcrete2(sa.NameConcrete(p[1]))
     else:
-        p[0] = sa.ListNamesConcrete2(p[1])
+        p[0] = sa.ListNamesConcrete1(sa.NameConcrete(p[1]), p[3])
 
 
 # definição de listaexps
@@ -209,7 +245,7 @@ def p_exp(p):
             p[0] = sa.ExpExpo(p[1], p[3])
         elif p[2] == '~=':
             p[0] = sa.ExpDif(p[1], p[3])
-        """elif p[2] == '%':
+        elif p[2] == '%':
             p[0] = sa.ExpPercentual(p[1], p[3])
         elif p[2] == '..':
             p[0] = sa.ExpConcat(p[1], p[3])
@@ -222,28 +258,17 @@ def p_exp(p):
         elif p[2] == '>=':
             p[0] = sa.ExpGtEquals(p[1], p[3])
         elif p[2] == '==':
-            p[0] = sa.ExpEquals(p[1], p[3])"""
-        
-        """elif p[2] == 'and':
+            p[0] = sa.ExpEquals(p[1], p[3])
+        elif p[2] == 'and':
             p[0] = sa.ExpAnd(p[1], p[3])
         elif p[2] == 'or':
-            p[0] = sa.ExpOr(p[1], p[3])"""
+            p[0] = sa.ExpOr(p[1], p[3])
 
 
 
 def p_call_function(p):
     '''call_function : prefix_exp args'''
     p[0] = sa.CallFunctionConcrete(p[1], p[2])
-
-
-# definição de args
-"""def p_args(p):
-    ''' args : LPAREN list_exps RPAREN
-             | LPAREN RPAREN'''
-    if (len(p) == 4):
-        p[0] = sa.ExpArgs1(p[2])
-    elif (len(p) == 3):
-        p[0] = sa.ExpArgs2(p[1], p[2])"""
 
 
 # definição de deffunção
@@ -266,11 +291,11 @@ def p_list_pars(p):
     '''list_pars : list_names
                  | list_names COMMA VARARGS
                  | VARARGS'''
-    if (p[0] == 'list_names'):
+    if len(p) == 2 and isinstance(p[1], sa.ListNames):
         p[0] = sa.ListPars(p[1])
-    elif (len(p) == 3):
+    elif len(p) == 4:
         p[0] = sa.ListPars2(p[1], p[3])
-    elif (p[1] == 'varargs'):
+    else:
         p[0] = sa.ListPars3(p[1])
 
 
@@ -279,48 +304,50 @@ def p_function(p):
     '''function : FUNCTION name_function body_function'''
     p[0] = sa.FunctionConcrete(p[2], p[3])
 
+def p_name_function(p):
+    '''name_function : NAME'''
+    p[0] = sa.NameFunctionConcrete(p[1])
 
 # definicao de if
 def p_if(p):
-    '''if : IF exp THEN block END
-          | IF exp THEN block else1
-          | IF exp THEN block else_if else1'''
-    if (p[5] == 'end'):
-        p[0] = sa.IfConcrete(p[2], p[4])
-    elif (p[5] == 'else1'):
-        p[0] = sa.IfConcrete2(p[2], p[4], p[5])
-    elif (len(p) == 6):
-        p[0] = sa.IfConcrete3(p[2], p[4], p[5], p[6])
+    '''if : IF exp THEN block elseif_list else_opt END'''
+    p[0] = sa.IfConcreteFull(p[2], p[4], p[5], p[6])
 
+def p_elseif_list(p):
+    '''elseif_list : elseif_list ELSEIF exp THEN block
+                   | empty'''
+    if len(p) == 6:
+        p[0] = p[1] + [(p[3], p[5])]
+    else:
+        p[0] = []
 
-def p_else_if(p):
-    '''else_if : ELSEIF exp THEN block
-               | ELSEIF exp THEN block else_if'''
-    if (len(p) == 4):
-        p[0] = sa.ConcreteElseIf1(p[2], p[4])
-    elif (len(p) == 5):
-        p[0] = sa.ConcreteElseIf2(p[2], p[4], p[5])
+def p_else_opt(p):
+    '''else_opt : ELSE block
+                | empty'''
+    if len(p) == 3:
+        p[0] = p[2]
+    else:
+        p[0] = None
 
-
-def p_else(p):
-    '''else1 : ELSE block END'''
-    p[0] = sa.ConcreteElse(p[2])
+def p_empty(p):
+    'empty :'
+    pass
 
 
 # definicao de while
 def p_struct_while(p):
     '''struct_while : WHILE exp DO block END'''
-    p[0] = sa.StructForConcret(p[2], p[4])
-
+    
 
 # definicao de for
 def p_struct_for(p):
     '''struct_for : FOR NAME ATRIB exp COMMA exp DO block END
                   | FOR NAME ATRIB exp COMMA exp COMMA exp DO block END'''
-    if (len(p) == 9):
-        p[0] = sa.StructForConcret1(p[4], p[6], p[8])
-    elif (len(p) == 11):
-        p[0] = sa.StructForConcret2(p[4], p[6], p[8], p[10])
+    if len(p) == 9:
+        p[0] = sa.StructForConcrete(p[4], p[6], p[8])
+    elif len(p) == 11:
+        p[0] = sa.StructForConcrete(p[4], p[6], p[10], p[8])
+
 
 
 # definicao de forin
@@ -345,3 +372,4 @@ def p_error(p):
 
 # REFERÊNCIAS (NO FINAL DO MANUAL TEM A DEFINIÇÃO DE TUDO)
 # LINK DO MANUAL : https://www.lua.org/manual/5.2/pt/manual.html
+parser = yacc.yacc()

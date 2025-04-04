@@ -1,92 +1,39 @@
-from ExpressionLanguageLex import *
-from ExpressionLanguageParser import *
-from Visitor import *
+# -*- coding: utf-8 -*-
+from lexer.ExpressionLanguageLex import lexer
+from parser.ExpressionLanguageParser import parser
+from visitor.Visitor import Visitor
+from syntax.SintaxeAbstrata import *
 
-lexer = lex.lex()
 
-data = '''
--- Função para exibir o menu
-function exibirMenu()
-    print("=== Calculadora Lua ===")
-    print("Escolha a operação:")
-    print("1. Adição")
-    print("2. Subtração")
-    print("3. Multiplicação")
-    print("4. Divisão")
-    print("5. Sair")
-    print("=======================")
-end
-
--- Adição
-function adicao(a, b)
-    return a + b
-end
-
--- Subtração
-function subtracao(a, b)
-    return a - b
-end
-
--- Multiplicação
-function multiplicacao(a, b)
-    return a * b
-end
-
--- Divisão
-function divisao(a, b)
-    return a / b
-end
-
--- Calculadora
-function calculadora()
-    local operacao = 0
+def analisar_codigo(codigo: str, debug=False):
+    print("\n" + "=" * 50)
+    print("Código de entrada:")
+    print(codigo.strip())
+    print("=" * 50 + "\n")
     
-    while operacao ~= 5 do
-        exibirMenu()
-        
-        -- Ler a operação escolhida
-        operacao = tonumber(io.read())
-        
-        if operacao == 5 then
-            print("Calculadora encerrada.")
-            break
-        end
-        
-        -- Ler os números
-        print("Digite o primeiro número:")
-        local num1 = tonumber(io.read())
-        print("Digite o segundo número:")
-        local num2 = tonumber(io.read())
-        
-        -- Realizar a operação selecionada
-        if operacao == 1 then
-            local resultado = adicao(num1, num2)
-            print("Resultado: " .. resultado)
-        elseif operacao == 2 then
-            local resultado = subtracao(num1, num2)
-            print("Resultado: " .. resultado)
-        elseif operacao == 3 then
-            local resultado = multiplicacao(num1, num2)
-            print("Resultado: " .. resultado)
-        elseif operacao == 4 then
-            local resultado = divisao(num1, num2)
-            print("Resultado: " .. resultado)
-        else
-            print("Operação inválida. Tente novamente.")
-        end
-        
-        print("=======================")
-    end
-end
+    lexer.input(codigo)
+    result = parser.parse(debug=debug)
 
--- Iniciar a calculadora
-calculadora()
-'''
-lexer.input(data)
-parser = yacc.yacc()
-result = parser.parse(debug=False)
-print("#realização da analise semantica")
-visitor = Visitor()
+    if result is None:
+        print("Erro: análise sintática falhou. Verifique seu código.")
+    else:
+        print("Análise sintática concluída com sucesso.")
+        print("\nIniciando análise semântica:\n")
+        visitor = Visitor()
+        result.accept(visitor)
+        print("\nAnálise semântica finalizada.")
 
-for r in result:
-    r.accept(visitor)
+
+def carregar_arquivo_lua(path):
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        print(f"Arquivo '{path}' não encontrado.")
+        return None
+
+
+if __name__ == "__main__":
+    codigo = carregar_arquivo_lua(path)
+        if codigo:
+            analisar_codigo(codigo)

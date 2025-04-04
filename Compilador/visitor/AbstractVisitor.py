@@ -2,17 +2,6 @@ from abc import abstractmethod, ABCMeta
 
 
 class AbstractVisitor(metaclass=ABCMeta):
-    @abstractmethod
-    def visitProgramConcrete(self, programConcrete):
-        pass
-
-    @abstractmethod
-    def visitProgramConcrete2(self, programConcrete2):
-        pass
-
-    @abstractmethod
-    def visitBlockConcrete(self, blockConcrete):
-        pass
 
     @abstractmethod
     def visitBlockConcrete2(self, blockConcrete2):
@@ -80,27 +69,7 @@ class AbstractVisitor(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def visitCommandIf(self, ifConcrete):
-        pass
-
-    @abstractmethod
-    def visitCommandIf2(self, ifConcrete2):
-        pass
-
-    @abstractmethod
-    def visitCommandIf3(self, ifConcrete3):
-        pass
-
-    @abstractmethod
-    def visitCommandElseIf1(self, concreteElseIf1):
-        pass
-
-    @abstractmethod
-    def visitCommandElse(self, concreteElse):
-        pass
-
-    @abstractmethod
-    def visitCommandElseIf2(self, concreteElseIf2):
+    def visitIfConcreteFull(self, node):
         pass
 
     @abstractmethod
@@ -121,6 +90,22 @@ class AbstractVisitor(metaclass=ABCMeta):
 
     @abstractmethod
     def visitExpArgs1(self, args):
+        pass
+
+    @abstractmethod
+    def visitPrefixExpSufix(self, node): 
+        pass
+
+    @abstractmethod
+    def visitPrefixExpName(self, prefixExpName):
+        pass
+
+    @abstractmethod
+    def visitSufixExpDot(self, node): 
+        pass
+
+    @abstractmethod
+    def visitSufixExpCall(self, node): 
         pass
 
     @abstractmethod
@@ -280,11 +265,111 @@ class AbstractVisitor(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def visitExpPercentual(self, node): pass
+
+    @abstractmethod
+    def visitExpConcat(self, node): pass
+
+    @abstractmethod
+    def visitExpLt(self, node): pass
+
+    @abstractmethod
+    def visitExpLtEquals(self, node): pass
+
+    @abstractmethod
+    def visitExpGt(self, node): pass
+
+    @abstractmethod
+    def visitExpGtEquals(self, node): pass
+
+    @abstractmethod
+    def visitExpEquals(self, node): pass
+
+    @abstractmethod
+    def visitExpAnd(self, node): pass
+
+    @abstractmethod
+    def visitExpOr(self, node): 
+        pass
+    
+    @abstractmethod
+    def visitExpPercentual(self, node): 
+        pass
+
+    @abstractmethod
+    def visitExpConcat(self, node): 
+        pass
+
+    @abstractmethod
+    def visitExpLt(self, node): 
+        pass
+
+    @abstractmethod
+    def visitExpLtEquals(self, node): 
+        pass
+
+    @abstractmethod
+    def visitExpGt(self, node): 
+        pass
+
+    @abstractmethod
+    def visitExpGtEquals(self, node): 
+        pass
+
+    @abstractmethod
+    def visitExpEquals(self, node): 
+        pass
+
+    @abstractmethod
+    def visitExpAnd(self, node): 
+        pass
+
+    @abstractmethod
+    def visitExpOr(self, node): 
+        pass
+
+    @abstractmethod
     def visitCommandExpExpo(self, commandExp):
         pass
 
     @abstractmethod
     def visitCommandExpPercentual(self, commandExp):
+        pass
+
+    @abstractmethod
+    def visitExpPercentual(self, exp): 
+        pass
+
+    @abstractmethod
+    def visitExpConcat(self, exp): 
+        pass
+
+    @abstractmethod
+    def visitExpLt(self, exp): 
+        pass
+
+    @abstractmethod
+    def visitExpLtEquals(self, exp): 
+        pass
+
+    @abstractmethod
+    def visitExpGt(self, exp): 
+        pass
+
+    @abstractmethod
+    def visitExpGtEquals(self, exp): 
+        pass
+
+    @abstractmethod
+    def visitExpEquals(self, exp): 
+        pass
+
+    @abstractmethod
+    def visitExpAnd(self, exp): 
+        pass
+
+    @abstractmethod
+    def visitExpOr(self, exp): 
         pass
 
     @abstractmethod

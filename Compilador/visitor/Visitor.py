@@ -1,5 +1,5 @@
-from AbstractVisitor import AbstractVisitor
-from ExpressionLanguageParser import *
+from visitor.AbstractVisitor import AbstractVisitor
+import syntax.SintaxeAbstrata as sa
 
 # global tab
 tab = 0
@@ -12,14 +12,165 @@ def blank():
 
 
 class Visitor(AbstractVisitor):
-    def visitProgramConcrete(self, programConcrete):
-        programConcrete.block.accept(self)
-      
-    def visitProgramConcrete2(self, programConcrete):
-        programConcrete.function.accept(self)
+    def __init__(self):
+        self.tabela_simbolos = {}
 
-    def visitBlockConcrete(self, blockConcrete):
-        blockConcrete.command.accept(self)
+        
+    def visitProgram(self, program):
+        for element in program.body:
+            if element is not None:
+                element.accept(self)
+            
+
+    def visitBlockConcrete2(self, node):
+        node.command.accept(self)
+
+    def visitBodyFunction(self, node):
+        print("(", end="")
+        node.list_pars.accept(self)
+        print(")")
+        node.block.accept(self)
+
+    def visitCommandAtrib(self, node):
+        node.list_vars.accept(self)
+        print(" = ", end="")
+        node.list_exps.accept(self)
+
+    def visitCommandBreak(self, node):
+        print("break")
+
+    def visitCommandDivide(self, node):
+        node.exp.accept(self)
+        print(" / ", end="")
+        node.exp2.accept(self)
+
+    def visitCommandDoBlockEnd(self, node):
+        print("do")
+        node.block.accept(self)
+        print("end")
+
+    def visitCommandElseIf1(self, node):
+        print("elseif ", end="")
+        node.exp.accept(self)
+        print(" then")
+        node.block.accept(self)
+
+    def visitCommandExpCallFunction(self, node):
+        node.exp_prefix.accept(self)
+        node.args.accept(self)
+
+    def visitCommandExpPrefixExp(self, node):
+        node.prefix_exp.accept(self)
+
+    def visitCommandExpo(self, node):
+        node.exp.accept(self)
+        print(" ^ ", end="")
+        node.exp2.accept(self)
+
+    def visitCommandListvars1(self, node):
+        node.var.accept(self)
+
+    def visitCommandListvars2(self, node):
+        node.var.accept(self)
+        print(", ", end="")
+        node.list_vars.accept(self)
+
+    def visitCommandLocalListVarsAtribListExps(self, node):
+        print("local ", end="")
+        node.list_vars.accept(self)
+        print(" = ", end="")
+        node.list_exps.accept(self)
+
+    def visitCommandMinus(self, node):
+        node.exp.accept(self)
+        print(" - ", end="")
+        node.exp2.accept(self)
+
+    def visitCommandNot(self, node):
+        print("not ", end="")
+        node.exp.accept(self)
+
+    def visitCommandPlus(self, node):
+        node.exp.accept(self)
+        print(" + ", end="")
+        node.exp2.accept(self)
+
+    def visitCommandStructFor1(self, node):
+        print("for ", end="")
+        node.name.accept(self)
+        print(" = ", end="")
+        node.exp1.accept(self)
+        print(", ", end="")
+        node.exp2.accept(self)
+        print(" do")
+        node.block.accept(self)
+        print("end")
+
+    def visitCommandStructFor2(self, node):
+        print("for ", end="")
+        node.name.accept(self)
+        print(" = ", end="")
+        node.exp1.accept(self)
+        print(", ", end="")
+        node.exp2.accept(self)
+        print(", ", end="")
+        node.exp3.accept(self)
+        print(" do")
+        node.block.accept(self)
+        print("end")
+
+    def visitCommandTag(self, node):
+        print("#", end="")
+        node.exp.accept(self)
+
+    def visitCommandVar1(self, node):
+        node.name.accept(self)
+
+    def visitCommandVar2(self, node):
+        node.prefix_exp.accept(self)
+        print("[", end="")
+        node.exp.accept(self)
+        print("]", end="")
+
+    def visitConcreteDefFunction(self, node):
+        print("function", end="")
+        node.body_function.accept(self)
+
+    def visitExpArgs1(self, node):
+        print("(", end="")
+        node.list_exps.accept(self)
+        print(")", end="")
+
+    def visitExpNameFunction1(self, node):
+        node.name.accept(self)
+
+    def visitExpNameFunction2(self, node):
+        node.name1.accept(self)
+        print(".", end="")
+        node.name2.accept(self)
+        print(":", end="")
+        node.name3.accept(self)
+
+    def visitExpRotulo(self, node):
+        print("::", end="")
+        node.name.accept(self)
+        print("::", end="")
+
+    def visitListExpsConcrete1(self, node):
+        node.exp.accept(self)
+        print(", ", end="")
+        node.list_exps.accept(self)
+
+    def visitListExpsConcrete2(self, node):
+        node.exp.accept(self)
+
+    def visitListNamesConcrete1(self, node):
+        node.name.accept(self)
+        print(", ", end="")
+        node.list_names.accept(self)
+
+    def visitListNamesConcrete2(self, node):
+        node.name.accept(self)
 
 #incompleto esse
     def visitCommandCallFunction(self, commandCallFunction):
@@ -49,45 +200,23 @@ class Visitor(AbstractVisitor):
         print('until ', end='')
         commandStructRepeat.exp.accept(self)
 
-    def visitCommandIf(self, commandIf):
-        print('if')
-        commandIf.exp.accept(self)
-        print('then')
-        commandIf.block.accept(self)
-        print('end')
+    def visitIfConcreteFull(self, node):
+        print("if ", end='')
+        node.cond.accept(self)
+        print(" then")
+        node.bloco.accept(self)
 
-    def visitCommandIf2(self, commandIf):
-        print('if')
-        commandIf.exp.accept(self)
-        print('then')
-        commandIf.block.accept(self)
-        commandIf.else1.accept(self)
-     
-    def visitCommandIf3(self, commandIf):
-        print('if')
-        commandIf.exp.accept(self)
-        print('then')
-        commandIf.block.accept(self)
-        commandIf.else_if.accept(self)
-        commandIf.else1.accept(self)
+        for cond, bloco in node.elseif_list:
+            print("elseif ", end='')
+            cond.accept(self)
+            print(" then")
+            bloco.accept(self)
 
-    def visitCommandElseIf(self, commandIf):
-        print('elseif')
-        commandIf.exp.accept(self)
-        print('then')
-        commandIf.block.accept(self)
-
-    def visitCommandElse(self, commandIf):
-        print('else')
-        commandIf.block.accept(self)
-        print('end')
-
-    def visitCommandElseIf2(self, commandIf):
-        print('elseif')
-        commandIf.exp.accept(self)
-        print('then')
-        commandIf.block.accept(self)
-        commandIf.else_if.accept(self)
+        if node.else_block:
+            print("else")
+            node.else_block.accept(self)
+        
+        print("end")
 
     def visitCommandStructForIn(self, commandStructForIn):
         print(blank(), 'for ', end='', sep='')
@@ -121,10 +250,30 @@ class Visitor(AbstractVisitor):
         commandRet.list_exps.accept(self)
         print(';')
 
+    def visitPrefixExpSufix(self, node):
+        node.prefix.accept(self)
+        node.sufix.accept(self)
+
+    def visitSufixExpDot(self, node):
+        print(".", end="")
+        print(node.name, end="")
+
+    def visitPrefixExpName(self, prefixExpName):
+        print(prefixExpName.name, end='')
+
+    def visitSufixExpCall(self, node):
+        print(".", end="")
+        node.call_function.accept(self)
+
     def visitFunctionConcrete(self, functionConcrete):
         print('function ', end='')
         functionConcrete.name_function.accept(self)
         functionConcrete.body_function.accept(self)
+
+    def visitNameFunctionConcrete(self, node):
+        print(node.name, end='') 
+
+
 
     def visitCommandDefFunction(self, commandDefFunction):
         commandDefFunction.function.accept(self)
@@ -150,6 +299,13 @@ class Visitor(AbstractVisitor):
         commandListNames.name.accept(self)
         commandListNames.list_names.accept(self)
 
+    def visitNameConcrete(self, node):
+        nome = node.value
+        if nome in self.tabela_simbolos:
+            print(f"Erro: variável '{nome}' já declarada.")
+        else:
+            self.tabela_simbolos[nome] = {"tipo": "parametro", "linha": node.linha}
+
     def visitCommandListExps(self, commandListExps):
         commandListExps.exp.accept(self)
         commandListExps.list_exps.accept(self)
@@ -164,6 +320,52 @@ class Visitor(AbstractVisitor):
         commandExp.exp.accept(self)
         print('*', end='')
         commandExp.exp2.accept(self)
+
+    def visitExpPercentual(self, exp):
+        exp.left.accept(self)
+        print(" % ", end="")
+        exp.right.accept(self)
+
+    def visitExpConcat(self, exp):
+        exp.left.accept(self)
+        print(" .. ", end="")
+        exp.right.accept(self)
+
+    def visitExpLt(self, exp):
+        exp.left.accept(self)
+        print(" < ", end="")
+        exp.right.accept(self)
+
+    def visitExpLtEquals(self, exp):
+        exp.left.accept(self)
+        print(" <= ", end="")
+        exp.right.accept(self)
+
+    def visitExpGt(self, exp):
+        exp.left.accept(self)
+        print(" > ", end="")
+        exp.right.accept(self)
+
+    def visitExpGtEquals(self, exp):
+        exp.left.accept(self)
+        print(" >= ", end="")
+        exp.right.accept(self)
+
+    def visitExpEquals(self, exp):
+        exp.left.accept(self)
+        print(" == ", end="")
+        exp.right.accept(self)
+
+    def visitExpAnd(self, exp):
+        exp.left.accept(self)
+        print(" and ", end="")
+        exp.right.accept(self)
+
+    def visitExpOr(self, exp):
+        exp.left.accept(self)
+        print(" or ", end="")
+        exp.right.accept(self)
+
 
     def visitCommandExpNumber(self, commandExp):
         print(f"{commandExp.number}", end='')
@@ -198,6 +400,42 @@ class Visitor(AbstractVisitor):
         commandExp.exp1.accept(self)
         print("~=", end='')
         commandExp.exp2.accept(self)
+
+    def visitExpPercentual(self, node):
+        node.left.accept(self)
+        node.right.accept(self)
+
+    def visitExpConcat(self, node):
+        node.left.accept(self)
+        node.right.accept(self)
+
+    def visitExpLt(self, node):
+        node.left.accept(self)
+        node.right.accept(self)
+
+    def visitExpLtEquals(self, node):
+        node.left.accept(self)
+        node.right.accept(self)
+
+    def visitExpGt(self, node):
+        node.left.accept(self)
+        node.right.accept(self)
+
+    def visitExpGtEquals(self, node):
+        node.left.accept(self)
+        node.right.accept(self)
+
+    def visitExpEquals(self, node):
+        node.left.accept(self)
+        node.right.accept(self)
+
+    def visitExpAnd(self, node):
+        node.left.accept(self)
+        node.right.accept(self)
+
+    def visitExpOr(self, node):
+        node.left.accept(self)
+        node.right.accept(self)
 
     def visitCommandExpExpo(self, commandExp):
         commandExp.exp.accept(self)
@@ -269,10 +507,10 @@ class Visitor(AbstractVisitor):
         print('()')
 
     def visitCommandBodyFunction(self, commandFunction):
-        print('(')
-        commandFunction.list_pars.accept(self)
-        print(')')
-        commandFunction.block.accept(self)
+        if commandFunction.list_pars:
+            commandFunction.list_pars.accept(self)
+        if commandFunction.block:
+            commandFunction.block.accept(self)
 
     def visitCommandListPars(self, commandListPars):
         commandListPars.list_names.accept(self)

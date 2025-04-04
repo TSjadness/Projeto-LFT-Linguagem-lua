@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import ply.lex as lex
 
 reserved = {
@@ -22,14 +23,13 @@ reserved = {
     'then': 'THEN',
     'until': 'UNTIL',
     'while': 'WHILE',
-    'string': 'STRING',
 }
 # Lista de tokens
 tokens = [
     'NAME', 'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'EQUALS', 'LPAREN',
     'RPAREN', 'COMMA', 'SEMICOLON', 'COLON', 'DUALCOLON',
     'VARARGS', 'ATRIB', 'DIF', 'GT', 'LT', 'GTEQUALS', 'LTEQUALS',
-    'PERCENTUAL', 'EXPO', 'CONCAT', 'TAG', 'LCOLCH', 'RCOLCH'
+    'PERCENTUAL', 'EXPO', 'CONCAT', 'TAG', 'LCOLCH', 'RCOLCH', 'DOT','STRING'
 ] + list(reserved.values())
 
 # Regras de expressões regulares para tokens simples
@@ -57,6 +57,7 @@ t_LTEQUALS = r'<='
 t_EXPO = r'\^'
 t_CONCAT = r'\.\.'
 t_TAG = r'\#'
+t_DOT = r'\.'
 
 
 # Nomes e números
@@ -78,12 +79,6 @@ def t_COMMENT(t):
     pass
 
 
-def t_ID(t):
-    r'[a-zA-Z_][a-zA-Z_0-9]*'
-    t.type = reserved.get(t.value.lower(), 'ID')
-    return t
-
-
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
@@ -93,11 +88,14 @@ t_ignore = ' \t'  # Ignorar espaços em branco
 
 
 def t_STRING(t):
-    r'\"([^\\\n]|(\\.))*?\"'
-    t.value = t.value[1:-1]
+    r'"([^"\\\n]|(\\.)|\n)*?"'
+    t.value = t.value[1:-1]  # remove as aspas
     return t
 
 
 def t_error(t):
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
+
+
+lexer = lex.lex()
